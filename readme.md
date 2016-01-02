@@ -1,7 +1,7 @@
 # Lo JsonDB
 Save your data in .json files and query it with create, delete, update and find. Thanks to **lodash** :)
 
-### Why?
+## Why?
 Just for fun.  
 Thinking about performance, it's not very useful for large amounts of data.  
 But, jsondb don't need to install anything, and it's easy to start to use. So, you can use to prototyping a project or to save a small data.  
@@ -10,10 +10,11 @@ But, jsondb don't need to install anything, and it's easy to start to use. So, y
 
 #### Install:
 ```
-npm install lo-jsondb
+npm install lo-jsondb --save
 ```
 #### Collection:
 ```js
+var jsondb = require('lo-jsondb');
 var pokemons = jsondb('pokemons', {pretty: true});  
 ```
 It will use a `pokemons.json` file to store data.  
