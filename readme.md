@@ -121,6 +121,59 @@ pokemons.delete(function(pokemon){
 }); // Pikachu
 ```
 
+## File Data:
+The file is an object with a settings and data properties:  
+**Empty collection:**
+```json
+{
+    "settings": {
+        "ai": 1
+    },
+    "data": []
+}
+```
+
+**With documents:**
+```json
+{
+    "settings": {
+        "ai": 4
+    },
+    "data": [
+        {
+            "id": 1,
+            "name": "Rattata",
+            "types": [
+                "normal"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Pikachu",
+            "types": [
+                "electric"
+            ]
+        },
+        {
+            "id": 3,
+            "name": "Bulbasaur",
+            "types": [
+                "grass",
+                "poison"
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Exeggcute",
+            "types": [
+                "grass",
+                "psychic"
+            ]
+        }
+    ]
+}
+```
+
 ## Contributions:
 Feel free to send pull requests.  
 If you add more features, please don't forget to add tests in `test/test.js`
