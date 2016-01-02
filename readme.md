@@ -19,10 +19,13 @@ var pokemons = jsondb('pokemons', {pretty: true});
 ```
 It will use a `pokemons.json` file to store data.  
 If file does not exist, it will be created.  
+   
 You can create with deep path too, example:  
 `jsondb('my/list/of/pokemons')`   
+   
 Also, you can pass .json directly, if you want for something reason:  
 `jsondb('my/pokemons.json')`  
+   
 `{pretty: true}` means that file will be saved in readable json (with tabs)
 
 #### Create:
