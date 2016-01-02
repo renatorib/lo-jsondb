@@ -1,10 +1,12 @@
-# Lo JsonDB [![Code Climate](https://codeclimate.com/github/renatorib/lo-jsondb/badges/gpa.svg)](https://codeclimate.com/github/renatorib/lo-jsondb)
+# Lo JsonDB [![Code Climate](https://codeclimate.com/github/renatorib/lo-jsondb/badges/gpa.svg)](https://codeclimate.com/github/renatorib/lo-jsondb) [![Build Status](https://travis-ci.org/renatorib/lo-jsondb.svg?branch=master)](https://travis-ci.org/renatorib/lo-jsondb)
+
 Save your data in .json files and query it with create, delete, update and find. Thanks to **lodash** :)
 
 ## Why?
 Just for fun.  
 Thinking about performance, it's not very useful for large amounts of data.  
-But, jsondb don't need to install anything, and it's easy to start to use. So, you can use to prototyping a project or to save a small data.  
+But, jsondb don't need to install anything, and it's easy to start to use.  
+You can use to prototyping a project or to save a small data.  
 
 ## Getting started
 
