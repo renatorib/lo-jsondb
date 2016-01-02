@@ -4,24 +4,7 @@ var jsondb = require('../index.js');
 var file = require('../src/file.js');
 var fs = require('fs');
 
-
 describe("Constructor", function(){
-
-    it("Create file", function(){
-        var test = jsondb('test');
-        var exists = file.exists('test.json');
-        assert.ok(exists, 'file exists');
-        fs.unlinkSync('test.json');
-    });
-
-    it("Create deep file", function(){
-        var test = jsondb('foo/bar/test.json');
-        var exists = file.exists('foo/bar/test.json');
-        assert.ok(exists, 'deep file exists');
-        fs.unlinkSync('foo/bar/test.json');
-        fs.rmdirSync('foo/bar/');
-        fs.rmdirSync('foo/');
-    });
 
     it("Settings and Data", function(){
         var test = jsondb('test');
