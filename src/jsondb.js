@@ -155,8 +155,12 @@ JsonDB.prototype._updateMany = function(query, update, identical, write){
         var match = _.where(this.get.data, query);
         if(match){
             _.forEach(match, function(doc){
-                var index = _.indexOf(this.get.data, doc);
-                this.get.data[index] = _.assign(update, {id: doc.id});
+                if(identical){
+                    var index = _.indexOf(this.get.data, doc);
+                    this.get.data[index] = _.assign(update, {id: doc.id});
+                } else {
+                    _.assign(doc, update);
+                }
             }.bind(this));
         }
     }
@@ -180,15 +184,13 @@ JsonDB.prototype._updateMany = function(query, update, identical, write){
     return match || false;
 }
 
-JsonDB.prototype._findOne = function(query, write){
-    if(!_.isBoolean(write)) write = true;
+JsonDB.prototype._findOne = function(query){
     if(_.isNumber(query)) query = {id: query};
 
     return _.findWhere(this.get.data, query);
 }
 
-JsonDB.prototype._findMany = function(query, write){
-    if(!_.isBoolean(write)) write = true;
+JsonDB.prototype._findMany = function(query){
     if(_.isNumber(query)) query = {id: query};
 
     if(_.isArray(query)){
@@ -245,6 +247,31 @@ JsonDB.prototype.find = function(query){
 
 JsonDB.prototype.findOne = function(query){
     return this._findOne(query);
+}
+
+JsonDB.prototype.save = function(objs, identical, write){
+    if(!_.isBoolean(write)) write = true;
+    if(!_.isBoolean(identical)) identical = false;
+
+
+    if(_.isFunction(objs)) objs = objs();
+    if(_.isArray(objs)){
+        _.forEach(objs, function(obj){
+            return this.save(obj, identical, false)
+        }, this);
+    }
+    if(_.isPlainObject(objs)){
+        var obj = objs;
+        if(obj.id){
+            var match = this.findOne(obj.id);
+            if(match){
+                return this.update(match, obj, identical);
+            }
+        }
+        return this.create(obj);
+    }
+
+    if(write) this._reopen();
 }
 
 JsonDB.prototype.chain = function(){

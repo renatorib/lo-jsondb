@@ -167,7 +167,7 @@ describe("Update", function(){
         test.create([{b: 1, a: 'a'}, {b: 2, a: 'b'}]);
         test.update([{b: 1}, {b: 2}], {a: 'c'});
         expect(test.get.data[0].a).equal('c');
-        expect(test.get.data[1].a).equal('c');
+        expect(test.get.data[1].b).equal(2);
         fs.unlinkSync('test.json');
 
         var test = jsondb('test');
@@ -189,7 +189,7 @@ describe("Update", function(){
         var test = jsondb('test');
         test.create([{b: 1, a: 'a'}, {b: 2, a: 'b'}]);
         test.update([1, 2], {a: 'c'}, true);
-        expect(test.get.data[0].b).equal(undefined);
+        expect(test.get.data[0].a).equal('c');
         expect(test.get.data[1].b).equal(undefined);
         fs.unlinkSync('test.json');
     });
@@ -227,7 +227,7 @@ describe("Find", function(){
     });
 
     it(".find(Object): Many", function(){
-        var pokes = jsondb('pokes');
+        var pokes = jsondb('test');
         pokes.create([
             {name: 'Pikachu', types: ['electric']},
             {name: 'Bulbasaur', types: ['grass', 'poison']},
@@ -235,7 +235,64 @@ describe("Find", function(){
         ]);
         var find = pokes.find({types: ['grass']});
         expect(find.length).equal(2);
-        fs.unlinkSync('pokes.json');
+        fs.unlinkSync('test.json');
+    });
+
+});
+
+describe("Save", function(){
+
+    it("Save will create", function(){
+        var people = jsondb('test');
+        people.save([
+            {name: "Henry", age: 22, active: false},
+            {name: "Renato", age: 20, active: true},
+            {name: "Frank", age: 14, active: true}
+        ]);
+        expect(people.get.data.length).equal(3);
+        var renato = people.findOne({name: 'Renato'});
+        expect(renato.age).equal(20);
+        fs.unlinkSync('test.json');
+    });
+
+    it("Save will update", function(){
+        var people = jsondb('test');
+        people.save([
+            {name: "Henry", age: 22, active: false},
+            {name: "Renato", age: 20, active: true},
+            {name: "Frank", age: 14, active: true}
+        ]);
+        people.save([
+            {id: 1, name: "Oswald"},
+            {id: 2, age: 40},
+            {id: 3, active: false}
+        ]);
+
+        expect(people.get.data.length).equal(3);
+        var renato = people.findOne({name: 'Renato'});
+        expect(renato.age).equal(40);
+
+        fs.unlinkSync('test.json');
+    });
+
+    it("Save will update identical", function(){
+        var people = jsondb('test');
+        people.save([
+            {name: "Henry", age: 22, active: false},
+            {name: "Renato", age: 20, active: true},
+            {name: "Frank", age: 14, active: true}
+        ]);
+        people.save([
+            {id: 1, name: "Oswald"},
+            {id: 2, age: 40},
+            {id: 3, active: false}
+        ], true);
+
+        expect(people.get.data.length).equal(3);
+        var oswald = people.findOne({name: 'Oswald'});
+        expect(oswald.age).equal(undefined);
+
+        fs.unlinkSync('test.json');
     });
 
 });

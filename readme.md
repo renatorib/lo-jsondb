@@ -121,6 +121,17 @@ pokemons.delete(function(pokemon){
 }); // Pikachu
 ```
 
+#### Save:
+```js
+pokemons.save({id: 1, ...}); // update
+pokemons.save({id: 1, ...}, true); // update identical
+pokemons.save({...}); // create
+```
+
+`.save()` is a shorthand of create and update.  
+Will update if has `id` property in query, or create if not.  
+Accept second boolean argument for identical, in updates.   
+
 ## File Data:
 The file is an object with a settings and data properties:  
 **Empty collection:**
