@@ -99,7 +99,7 @@ pokemons.update(1, {foo: 'bar'});
 You can also query with functions and arrays:
 ```js
 pokemons.update(function(pokemon){
-    return pokemon.name == 'Rattata' || pokemon.id = 2
+    return pokemon.name == 'Rattata' || pokemon.id == 2
 }, {...});
 // updates Rattata and Pikachu
 
