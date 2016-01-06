@@ -277,3 +277,7 @@ JsonDB.prototype.save = function(objs, identical, write){
 JsonDB.prototype.chain = function(){
     return _(this.get.data).chain();
 }
+
+JsonDB.prototype.getLastInsertId = function(){
+    return this.get.settings.ai -1;
+}

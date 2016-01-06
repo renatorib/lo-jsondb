@@ -296,3 +296,16 @@ describe("Save", function(){
     });
 
 });
+
+describe("Get", function(){
+    it("Get last insert id", function(){
+        var people = jsondb('test');
+        people.save([
+            {name: "Henry", age: 22, active: false}
+        ]);
+
+        expect(people.getLastInsertId()).equal(1);
+        fs.unlinkSync('test.json');
+    });
+    
+});
