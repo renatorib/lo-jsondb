@@ -209,6 +209,10 @@ JsonDB.prototype._findMany = function(query){
     return _.where(this.get.data, query);
 }
 
+JsonDB.prototype._findLast = function(){
+    return _.last(this.get.data);
+}
+
 
 /**
  * Collection functions
@@ -281,3 +285,8 @@ JsonDB.prototype.chain = function(){
 JsonDB.prototype.getLastInsertId = function(){
     return this.get.settings.ai -1;
 }
+
+JsonDB.prototype.findLast = function(){
+    return this._findLast();
+}
+
