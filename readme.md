@@ -84,7 +84,7 @@ console.log(last);
 
 You can find with Int (document id), Object (query) or a Function that return an id or query; Also, you can pass an Array with Objects (two or more queries), or array with Ids 
 
-### Get:
+#### Get:
 ```js
 var lastID = pokemons.getLastInsertId();
 console.log(lastID);
