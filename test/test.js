@@ -238,6 +238,18 @@ describe("Find", function(){
         fs.unlinkSync('test.json');
     });
 
+    it(".find last", function(){
+        var pokes = jsondb('test');
+        pokes.create([
+            {name: 'Pikachu', types: ['electric']},
+            {name: 'Bulbasaur', types: ['grass', 'poison']},
+            {name: 'Other', types: ['electric', 'grass']},
+        ]);
+        var find = pokes.findLast();
+        expect(find.name).equal("Other");
+        fs.unlinkSync('test.json');
+    });
+
 });
 
 describe("Save", function(){
@@ -295,4 +307,18 @@ describe("Save", function(){
         fs.unlinkSync('test.json');
     });
 
+});
+
+describe("Get", function(){
+    it("Get last insert id", function(){
+        var people = jsondb('test');
+        people.save([
+            {name: "Henry", age: 22, active: false},
+            {name: "Pascal", age: 50, active: true}
+        ]);
+
+        people.delete({name: "Pascal"});
+        expect(people.getLastInsertId()).equal(2);
+        fs.unlinkSync('test.json');
+    });    
 });
