@@ -73,12 +73,23 @@ var byFunc = pokemons.find(function(pokemon){
 });
 // [ {name: 'Rattata', ...},
 //   {name: 'Pikachu', ...} ]
+
+var last = pokemons.findLast();
+console.log(last);
+//{name: 'Bulbasaur', types: ['grass', 'poison']}
 ```
 
 `.find()` always return an array of documents. Even if it's an id.  
 `.findOne()` always return the document. If query match more than one, it will return the first only.  
 
-You can find with Int (document id), Object (query) or a Function that return an id or query; Also, you can pass an Array with Objects (two or more queries), or array with Ids  
+You can find with Int (document id), Object (query) or a Function that return an id or query; Also, you can pass an Array with Objects (two or more queries), or array with Ids 
+
+### Get:
+```js
+var lastID = pokemons.getLastInsertId();
+console.log(lastID);
+//4
+``` 
 
 #### Update:
 ```js
