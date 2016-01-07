@@ -4,3 +4,6 @@
 
 **1.1**
 * Added support to .save(), a shorthand to update/create based on id field.
+
+**1.2**
+* Added support to .findLast() and .getLastInsertId() 
