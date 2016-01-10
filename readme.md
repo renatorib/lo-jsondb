@@ -17,7 +17,7 @@ npm install lo-jsondb --save
 #### Collection:
 ```js
 var jsondb = require('lo-jsondb');
-var pokemons = jsondb('pokemons', {pretty: true});  
+var pokemons = jsondb('pokemons', {pretty: true});
 ```
 It will use a `pokemons.json` file to store data.  
 If file does not exist, it will be created.  
@@ -29,6 +29,11 @@ Also, you can pass .json directly, if you want for something reason:
 `jsondb('my/pokemons.json')`  
 
 `{pretty: true}` means that file will be saved in readable json (with tabs)
+
+Pretty shorthand:
+```js
+var pokemons = jsondb.pretty('pokemons');  
+```
 
 #### Create:
 ```js
@@ -62,34 +67,46 @@ console.log(normalPokemon);
 // {name: 'Rattata', ...}
 
 var byId = pokemons.findOne(2);
+console.log(byId);
 // {name: 'Pikachu', ...}
 
 var byIds = pokemons.find([1, 2]);
+console.log(byIds);
 // [ {name: 'Rattata', ...},
 //   {name: 'Pikachu', ...} ]
 
 var byFunc = pokemons.find(function(pokemon){
     return pokemon.id == 1 || pokemon.name == 'Pikachu'
 });
+console.log(byFunc);
 // [ {name: 'Rattata', ...},
 //   {name: 'Pikachu', ...} ]
 
 var last = pokemons.findLast();
-console.log(last);
-//{name: 'Bulbasaur', types: ['grass', 'poison']}
+console.log(last.name);
+// Exeggcute
+
+var lastGrass = pokemons.findLast({types: ['poison']});
+console.log(lastGrass.name);
+// Exeggcute
+
+var first = pokemons.findFirst();
+console.log(first.name);
+// Rattata
+
+var firstGrass = pokemons.findFirst({types: ['grass']});
+console.log(firstGrass.name);
+// Bulbasaur
+
 ```
 
 `.find()` always return an array of documents. Even if it's an id.  
 `.findOne()` always return the document. If query match more than one, it will return the first only.  
+`.findAll()` is shorthand for `collection.find({})`
+`.findLast(query)` is shorthand for `_.last(collection.find(query))`
+`.findFirst(query)` is shorthand for `_.first(collection.find(query))`
 
 You can find with Int (document id), Object (query) or a Function that return an id or query; Also, you can pass an Array with Objects (two or more queries), or array with Ids
-
-#### Get:
-```js
-var lastID = pokemons.getLastInsertId();
-console.log(lastID);
-//4
-```
 
 #### Update:
 ```js
@@ -141,7 +158,20 @@ pokemons.save({...}); // create
 
 `.save()` is a shorthand of create and update.  
 Will update if has `id` property in query, or create if not.  
-Accept second boolean argument for identical, in updates.   
+Accept second boolean argument for identical, in updates.  
+
+#### Others:
+```js
+var people = jsondb('people');
+people.create([
+    {name: 'Foo'},
+    {name: 'Renato'}
+]);
+
+// getLastInsertId
+var lastid = people.getLastInsertId();
+console.log(lastid); // 2
+```
 
 ## File Data:
 The file is an object with a settings and data properties:  
