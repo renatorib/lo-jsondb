@@ -3,7 +3,13 @@
 * Supports ID auto incremention.
 
 **1.1**
-* Added support to .save(), a shorthand to update/create based on id field.
+* Added method `.save()`: shorthand to update/create based on id field.
 
 **1.2**
-* Added support to .findLast() and .getLastInsertId() 
+* Added methods `.findLast()` and `.getLastInsertId()`
+
+**1.3**
+* Added support to Single Documents, by `jsondb('file', {single: true})`
+* Added instance shorthands: `jsondb.single('file')`, `jsondb.pretty('file')`, `jsondb.single.pretty('file')`
+* Added methods `.findAll()`, `.findFirst(query)` and changes method `.findLast(query)`
+* Added methods `setProp()` and `getProp()`
