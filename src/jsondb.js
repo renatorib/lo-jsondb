@@ -7,14 +7,21 @@ var mkdirp = require('mkdirp');
 var path = require('path');
 var dirname = path.dirname;
 
-module.exports = function(dbname, options){
+var instance = function(dbname, options){
     return new JsonDB(dbname, options);
 }
+instance.single = function(dbname, options){
+    if(!_.isPlainObject(options)) options = {single: true};
+    return new JsonDB(dbname, options);
+}
+
+module.exports = instance;
 
 var JsonDB = function(db, options){
     if(!_.isPlainObject(options)) options = {};
     this.options = _.defaultsDeep(options, {
-        pretty: false
+        pretty: false,
+        single: false
     });
     this._ = _;
     this.db = utils.jsonFileName(db || 'index');
@@ -24,8 +31,12 @@ var JsonDB = function(db, options){
 
 JsonDB.prototype._init = function(){
     mkdirp.sync(dirname(this.db));
-
-    var object = {settings: {ai: 1}, data: []};
+    var object;
+    if(this.options.single){
+        object = {};
+    } else {
+        object = {settings: {ai: 1}, data: []};
+    }
     if(!file.exists(this.db)){
         this._set(object);
     }
@@ -36,14 +47,13 @@ JsonDB.prototype._init = function(){
  */
 
 JsonDB.prototype._get = function(){
-        return JSON.parse(file.read(this.db));
+    return JSON.parse(file.read(this.db));
 }
 
 JsonDB.prototype._set = function(contents){
     if(this.options.pretty)
         return file.write(this.db, JSON.stringify(contents, null, '\t'));
     return file.write(this.db, JSON.stringify(contents));
-
 }
 
 /**
@@ -51,11 +61,11 @@ JsonDB.prototype._set = function(contents){
  */
 
 JsonDB.prototype._open = function(){
-    this.get = this._get();
+    this.object = this._get();
 }
 
 JsonDB.prototype._close = function(){
-    this._set(this.get);
+    this._set(this.object);
 }
 
 JsonDB.prototype._reopen = function(){
@@ -69,11 +79,11 @@ JsonDB.prototype.write = JsonDB.prototype._reopen;
  */
 
 JsonDB.prototype._pushData = function(obj){
-    return this.get.data.push(obj);
+    return this.object.data.push(obj);
 }
 
 /**
- * Single functions
+ * Internal functions
  */
 
 JsonDB.prototype._createOne = function(obj, write){
@@ -81,7 +91,7 @@ JsonDB.prototype._createOne = function(obj, write){
     if(!_.isPlainObject(obj)) return false;
 
     var created = _.assign(obj, {
-        id: this.get.settings.ai++
+        id: this.object.settings.ai++
     });
     this._pushData(created);
 
@@ -107,8 +117,8 @@ JsonDB.prototype._deleteOne = function(query, write){
     if(!_.isBoolean(write)) write = true;
     if(_.isNumber(query)) query = {id: query};
 
-    var deleted = _.findWhere(this.get.data, query);
-    if(deleted) _.remove(this.get.data, {id: deleted.id});
+    var deleted = _.findWhere(this.object.data, query);
+    if(deleted) _.remove(this.object.data, {id: deleted.id});
 
     if(write) this._reopen();
     return deleted;
@@ -120,10 +130,10 @@ JsonDB.prototype._deleteMany = function(query, write){
     if(_.isArray(query)){
         _.forEach(query, function(_query){
             if(!_.isPlainObject(_query)) _query = {id: _query};
-            _.remove(this.get.data, _query);
+            _.remove(this.object.data, _query);
         }.bind(this));
     } else {
-        _.remove(this.get.data, query);
+        _.remove(this.object.data, query);
     }
 
     if(write) this._reopen();
@@ -134,11 +144,11 @@ JsonDB.prototype._updateOne = function(query, update, identical, write){
     if(!_.isBoolean(write)) write = true;
     if(_.isNumber(query)) query = {id: query};
 
-    var match = _.findWhere(this.get.data, query);
+    var match = _.findWhere(this.object.data, query);
     if(match){
         if(identical){
-            var index = _.indexOf(this.get.data, match);
-            this.get.data[index] = _.assign(update, {id: match.id});
+            var index = _.indexOf(this.object.data, match);
+            this.object.data[index] = _.assign(update, {id: match.id});
         } else {
             _.assign(match, update);
         }
@@ -152,12 +162,12 @@ JsonDB.prototype._updateMany = function(query, update, identical, write){
     if(!_.isBoolean(write)) write = true;
 
     if(_.isPlainObject(query)){
-        var match = _.where(this.get.data, query);
+        var match = _.where(this.object.data, query);
         if(match){
             _.forEach(match, function(doc){
                 if(identical){
-                    var index = _.indexOf(this.get.data, doc);
-                    this.get.data[index] = _.assign(update, {id: doc.id});
+                    var index = _.indexOf(this.object.data, doc);
+                    this.object.data[index] = _.assign(update, {id: doc.id});
                 } else {
                     _.assign(doc, update);
                 }
@@ -176,7 +186,7 @@ JsonDB.prototype._updateMany = function(query, update, identical, write){
     }
 
     if(_.isFunction(query)){
-        var match = _.filter(this.get.data, query);
+        var match = _.filter(this.object.data, query);
         return this._updateMany(match, update, identical, false);
     }
 
@@ -187,7 +197,7 @@ JsonDB.prototype._updateMany = function(query, update, identical, write){
 JsonDB.prototype._findOne = function(query){
     if(_.isNumber(query)) query = {id: query};
 
-    return _.findWhere(this.get.data, query);
+    return _.findWhere(this.object.data, query);
 }
 
 JsonDB.prototype._findMany = function(query){
@@ -203,14 +213,14 @@ JsonDB.prototype._findMany = function(query){
     }
 
     if(_.isFunction(query)){
-        return _.filter(this.get.data, query);
+        return _.filter(this.object.data, query);
     }
 
-    return _.where(this.get.data, query);
+    return _.where(this.object.data, query);
 }
 
 JsonDB.prototype._findLast = function(){
-    return _.last(this.get.data);
+    return _.last(this.object.data);
 }
 
 
@@ -279,14 +289,41 @@ JsonDB.prototype.save = function(objs, identical, write){
 }
 
 JsonDB.prototype.chain = function(){
-    return _(this.get.data).chain();
+    return _(this.object.data).chain();
 }
 
 JsonDB.prototype.getLastInsertId = function(){
-    return this.get.settings.ai -1;
+    return this.object.settings.ai -1;
 }
 
 JsonDB.prototype.findLast = function(){
     return this._findLast();
 }
 
+/* Single Functions */
+
+JsonDB.prototype.setProp = function(prop, value){
+    var deepAccess = this.object;
+    var propArr = prop.split(".");
+    while(propArr.length){
+        var deepProp = propArr.shift();
+        if(deepAccess[deepProp] === undefined){
+            deepAccess[deepProp] = {};
+        }
+        if(propArr.length == 0){
+            deepAccess[deepProp] = value;
+        } else {
+            deepAccess = deepAccess[deepProp];
+        }
+    };
+    this.write();
+}
+
+JsonDB.prototype.getProp = function(prop){
+    var deepAccess = this.object;
+    var propArr = prop.split(".");
+    while(propArr.length){
+        deepAccess = deepAccess[propArr.shift()]
+    };
+    return deepAccess;
+}
