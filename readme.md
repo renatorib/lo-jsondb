@@ -82,14 +82,14 @@ console.log(last);
 `.find()` always return an array of documents. Even if it's an id.  
 `.findOne()` always return the document. If query match more than one, it will return the first only.  
 
-You can find with Int (document id), Object (query) or a Function that return an id or query; Also, you can pass an Array with Objects (two or more queries), or array with Ids 
+You can find with Int (document id), Object (query) or a Function that return an id or query; Also, you can pass an Array with Objects (two or more queries), or array with Ids
 
 #### Get:
 ```js
 var lastID = pokemons.getLastInsertId();
 console.log(lastID);
 //4
-``` 
+```
 
 #### Update:
 ```js
@@ -194,6 +194,38 @@ The file is an object with a settings and data properties:
         }
     ]
 }
+```
+
+## Single Documents
+With single documents, you can create/read json files without settings/data structure:  
+
+Example:
+```js
+var jsondb = require('lo-jsondb');
+var settings = jsondb.single('settings', {pretty: true});  
+```
+_settings.json_:
+```json
+{}
+```
+_*.js_
+```js
+settings.setProp('my.site.name', 'Pokemon');
+```
+_settings.json_:
+```json
+{
+    "my": {
+        "site": {
+            "name": "Pokemon"
+        }
+    }
+}
+```
+_*.js_
+```js
+var siteName = settings.getProp('my.site.name');
+console.log(siteName); // -> Pokemon
 ```
 
 ## Contributions:
