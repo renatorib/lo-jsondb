@@ -18,6 +18,43 @@ describe("Collection", function(){
 
     });
 
+    describe("Instance shorthands", function(){
+
+        it("Collection", function(){
+            var test = jsondb('test');
+            expect(test.options.pretty).equal(false);
+            expect(test.options.single).equal(false);
+            fs.unlinkSync('test.json');
+
+            var test = jsondb.collection('test');
+            expect(test.options.pretty).equal(false);
+            expect(test.options.single).equal(false);
+            fs.unlinkSync('test.json');
+        });
+
+        it("Collection Pretty", function(){
+            var test = jsondb.pretty('test');
+            expect(test.options.pretty).equal(true);
+            expect(test.options.single).equal(false);
+            fs.unlinkSync('test.json');
+        });
+
+        it("Single", function(){
+            var test = jsondb.single('test');
+            expect(test.options.pretty).equal(false);
+            expect(test.options.single).equal(true);
+            fs.unlinkSync('test.json');
+        });
+
+        it("Single Pretty", function(){
+            var test = jsondb.single.pretty('test');
+            expect(test.options.pretty).equal(true);
+            expect(test.options.single).equal(true);
+            fs.unlinkSync('test.json');
+        });
+
+    });
+
     describe("Create", function(){
 
         it(".create(Object): One", function(){
@@ -240,15 +277,27 @@ describe("Collection", function(){
             fs.unlinkSync('test.json');
         });
 
-        it(".find last", function(){
+        it(".findLast() and .findFirst()", function(){
             var pokes = jsondb('test');
             pokes.create([
                 {name: 'Pikachu', types: ['electric']},
                 {name: 'Bulbasaur', types: ['grass', 'poison']},
-                {name: 'Other', types: ['electric', 'grass']},
+                {name: 'Grass', types: ['grass']},
+                {name: 'Other', types: ['electric']},
             ]);
-            var find = pokes.findLast();
-            expect(find.name).equal("Other");
+
+            var first = pokes.findFirst();
+            expect(first.name).equal("Pikachu");
+
+            var firstGrass = pokes.findFirst({types: ['grass']});
+            expect(firstGrass.name).equal("Bulbasaur");
+
+            var last = pokes.findLast();
+            expect(last.name).equal("Other");
+
+            var lastGrass = pokes.findLast({types: ['grass']});
+            expect(lastGrass.name).equal("Grass");
+
             fs.unlinkSync('test.json');
         });
 
@@ -324,15 +373,35 @@ describe("Collection", function(){
             fs.unlinkSync('test.json');
         });
     });
+
+    describe("Props", function(){
+
+        it("Get", function(){
+            var people = jsondb('test');
+            expect(people.getProp("settings")).to.be.an('object');
+            expect(people.getProp("settings.ai")).to.be.an('number');
+            fs.unlinkSync('test.json');
+        });
+
+        it("Set", function(){
+            var people = jsondb('test');
+            people.setProp("my.deep.prop", "Prop");
+            expect(people.getProp("my")).to.be.an('object');
+            expect(people.getProp("my.deep")).to.be.an('object');
+            expect(people.getProp("my.deep.prop")).equal('Prop');
+            fs.unlinkSync('test.json');
+        });
+
+    });
 });
 
 describe("Single", function(){
 
     it("Set and Get raw", function(){
-        var settings = jsondb('test', {single: true, pretty: true});
+        var settings = jsondb.single('test', {pretty: true});
         settings.object.foo = 'bar';
         settings.write();
-        var settings2 = jsondb('test', {single: true, pretty: true});
+        var settings2 = jsondb.single('test', {pretty: true});
         expect(settings2.object.foo).equal('bar');
         fs.unlinkSync('test.json');
     });

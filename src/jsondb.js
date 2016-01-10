@@ -10,8 +10,20 @@ var dirname = path.dirname;
 var instance = function(dbname, options){
     return new JsonDB(dbname, options);
 }
+instance.collection = instance;
+instance.pretty = function(dbname, options){
+    if(!_.isPlainObject(options)) options = {};
+    options = _.defaultsDeep(options, {pretty: true});
+    return new JsonDB(dbname, options);
+}
 instance.single = function(dbname, options){
-    if(!_.isPlainObject(options)) options = {single: true};
+    if(!_.isPlainObject(options)) options = {};
+    options = _.defaultsDeep(options, {single: true});
+    return new JsonDB(dbname, options);
+}
+instance.single.pretty = function(dbname, options){
+    if(!_.isPlainObject(options)) options = {};
+    options = _.defaultsDeep(options, {pretty: true, single: true});
     return new JsonDB(dbname, options);
 }
 
@@ -79,6 +91,7 @@ JsonDB.prototype.write = JsonDB.prototype._reopen;
  */
 
 JsonDB.prototype._pushData = function(obj){
+    if(this.object.data === undefined) return false;
     return this.object.data.push(obj);
 }
 
@@ -90,9 +103,12 @@ JsonDB.prototype._createOne = function(obj, write){
     if(!_.isBoolean(write)) write = true;
     if(!_.isPlainObject(obj)) return false;
 
-    var created = _.assign(obj, {
-        id: this.object.settings.ai++
-    });
+    var toassign = {};
+    if(this.object.settings.ai){
+        toassign.id = this.object.settings.ai++
+    }
+
+    var created = _.assign(obj, toassign);
     this._pushData(created);
 
     if(write) this._reopen();
@@ -114,6 +130,7 @@ JsonDB.prototype._createMany = function(objs, write){
 }
 
 JsonDB.prototype._deleteOne = function(query, write){
+    if(this.object.data === undefined) return false;
     if(!_.isBoolean(write)) write = true;
     if(_.isNumber(query)) query = {id: query};
 
@@ -125,6 +142,7 @@ JsonDB.prototype._deleteOne = function(query, write){
 }
 
 JsonDB.prototype._deleteMany = function(query, write){
+    if(this.object.data === undefined) return false;
     if(!_.isBoolean(write)) write = true;
 
     if(_.isArray(query)){
@@ -141,6 +159,7 @@ JsonDB.prototype._deleteMany = function(query, write){
 }
 
 JsonDB.prototype._updateOne = function(query, update, identical, write){
+    if(this.object.data === undefined) return false;
     if(!_.isBoolean(write)) write = true;
     if(_.isNumber(query)) query = {id: query};
 
@@ -159,6 +178,7 @@ JsonDB.prototype._updateOne = function(query, update, identical, write){
 }
 
 JsonDB.prototype._updateMany = function(query, update, identical, write){
+    if(this.object.data === undefined) return false;
     if(!_.isBoolean(write)) write = true;
 
     if(_.isPlainObject(query)){
@@ -195,12 +215,16 @@ JsonDB.prototype._updateMany = function(query, update, identical, write){
 }
 
 JsonDB.prototype._findOne = function(query){
+    if(this.object.data === undefined) return false;
+    if(query === undefined) query = {};
     if(_.isNumber(query)) query = {id: query};
 
     return _.findWhere(this.object.data, query);
 }
 
 JsonDB.prototype._findMany = function(query){
+    if(this.object.data === undefined) return false;
+    if(query === undefined) query = {};
     if(_.isNumber(query)) query = {id: query};
 
     if(_.isArray(query)){
@@ -219,10 +243,10 @@ JsonDB.prototype._findMany = function(query){
     return _.where(this.object.data, query);
 }
 
-JsonDB.prototype._findLast = function(){
-    return _.last(this.object.data);
+JsonDB.prototype._findManyAnd = function(query, fn){
+    var find = this._findMany(query);
+    return fn(find);
 }
-
 
 /**
  * Collection functions
@@ -263,6 +287,18 @@ JsonDB.prototype.findOne = function(query){
     return this._findOne(query);
 }
 
+JsonDB.prototype.findAll = function(query){
+    return this.find({});
+}
+
+JsonDB.prototype.findFirst = function(query){
+    return this._findManyAnd(query, _.first);
+}
+
+JsonDB.prototype.findLast = function(query){
+    return this._findManyAnd(query, _.last);
+}
+
 JsonDB.prototype.save = function(objs, identical, write){
     if(!_.isBoolean(write)) write = true;
     if(!_.isBoolean(identical)) identical = false;
@@ -295,12 +331,6 @@ JsonDB.prototype.chain = function(){
 JsonDB.prototype.getLastInsertId = function(){
     return this.object.settings.ai -1;
 }
-
-JsonDB.prototype.findLast = function(){
-    return this._findLast();
-}
-
-/* Single Functions */
 
 JsonDB.prototype.setProp = function(prop, value){
     var deepAccess = this.object;
