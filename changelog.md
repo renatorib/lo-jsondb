@@ -11,5 +11,5 @@
 **1.3**
 * Added support to Single Documents, by `jsondb('file', {single: true})`
 * Added instance shorthands: `jsondb.single('file')`, `jsondb.pretty('file')`, `jsondb.single.pretty('file')`
-* Added methods `.findAll()`, `.findFirst(query)` and changes method `.findLast(query)`
+* Added methods `.findAll()`, `.findFirst(query)` and changes method `.findLast()` to `.findLast(query)`
 * Added methods `setProp()` and `getProp()`
