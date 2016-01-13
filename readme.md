@@ -232,8 +232,13 @@ With single documents, you can create/read json files without settings/data stru
 Example:
 ```js
 var jsondb = require('lo-jsondb');
-var settings = jsondb.single('settings', {pretty: true});  
+var settings = jsondb('settings', {single: true, pretty: true});  
 ```
+Shorthand:
+```js
+var settings = jsondb.single.pretty('settings');
+```
+
 _settings.json_:
 ```json
 {}
