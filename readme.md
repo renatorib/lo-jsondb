@@ -101,10 +101,10 @@ console.log(firstGrass.name);
 ```
 
 `.find()` always return an array of documents. Even if it's an id.  
-`.findOne()` always return the document. If query match more than one, it will return the first only.  
-`.findAll()` is shorthand for `collection.find({})`
-`.findLast(query)` is shorthand for `_.last(collection.find(query))`
-`.findFirst(query)` is shorthand for `_.first(collection.find(query))`
+`.findOne()` always return the document. If query match more than one, it will return the first only.   
+`.findAll()` is shorthand for `collection.find({})`  
+`.findLast(query)` is shorthand for `_.last(collection.find(query))`  
+`.findFirst(query)` is shorthand for `_.first(collection.find(query))`  
 
 You can find with Int (document id), Object (query) or a Function that return an id or query; Also, you can pass an Array with Objects (two or more queries), or array with Ids
 
