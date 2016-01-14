@@ -303,7 +303,6 @@ JsonDB.prototype.save = function(objs, identical, write){
     if(!_.isBoolean(write)) write = true;
     if(!_.isBoolean(identical)) identical = false;
 
-
     if(_.isFunction(objs)) objs = objs();
     if(_.isArray(objs)){
         _.forEach(objs, function(obj){
@@ -340,12 +339,12 @@ JsonDB.prototype.setProp = function(prop, value){
         if(deepAccess[deepProp] === undefined){
             deepAccess[deepProp] = {};
         }
-        if(propArr.length == 0){
+        if(propArr.length === 0){
             deepAccess[deepProp] = value;
         } else {
             deepAccess = deepAccess[deepProp];
         }
-    };
+    }
     this.write();
 }
 
@@ -354,6 +353,6 @@ JsonDB.prototype.getProp = function(prop){
     var propArr = prop.split(".");
     while(propArr.length){
         deepAccess = deepAccess[propArr.shift()]
-    };
+    }
     return deepAccess;
 }
