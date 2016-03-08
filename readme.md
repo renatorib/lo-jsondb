@@ -1,4 +1,4 @@
-# Lo JsonDB [![Code Climate](https://codeclimate.com/github/renatorib/lo-jsondb/badges/gpa.svg)](https://codeclimate.com/github/renatorib/lo-jsondb)
+# Lo JsonDB
 
 Save your data in .json files and query it with create, delete, update and find. Thanks to **lodash** :)
 
